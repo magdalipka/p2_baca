@@ -3,7 +3,6 @@
 #include <cstdarg>
 using namespace std;
 
-//BASE functions------------------------------------------------------------------//
 
 void rever (string origin, string &dest, int iterator) {
 	if (iterator >= 0) {
@@ -19,8 +18,6 @@ string reverse(string napis) {
 	
 	return nowy;
 }
-
-//CORE functions-------------------------------------------------------------------//
 
 string add1 (string el1, string el2, string &wynik, int &carryover, int iterator, int condition) {
 
@@ -38,7 +35,6 @@ string add1 (string el1, string el2, string &wynik, int &carryover, int iterator
 	else return wynik; 
 
 }
-
 string add2 (string elem, string &wynik, int &carryover, int iterator, int condition) {
 
 	if ( iterator < condition ) {
@@ -55,7 +51,6 @@ string add2 (string elem, string &wynik, int &carryover, int iterator, int condi
 	else return wynik; 
 
 }
-
 string Add (string el1, string el2) {
 
 	int len1 = el1.length();
@@ -100,7 +95,6 @@ bool bychar (string s1, string s2, int iterator, int condition) {
 	else return false;
 
 }
-
 bool smaller ( string s1, string s2 ) {
 
 	if ( s1.length() < s2.length() ) return true;
@@ -128,7 +122,6 @@ string diff1 (string el1, string el2, string &wynik, int &carryover, int iterato
 	}
 	else return wynik; 
 }
-
 string diff2 (string elem, string &wynik, int &carryover, int iterator, int condition) {
 	if ( iterator < condition ) {
 
@@ -146,7 +139,6 @@ string diff2 (string elem, string &wynik, int &carryover, int iterator, int cond
 	}
 	else return wynik; 
 }
-
 string Diff (string el1, string el2) {
 
 	if ( smaller(el1, el2) ) {
@@ -177,27 +169,31 @@ string Diff (string el1, string el2) {
 
 }
 
-string AddMany (const string* argv, string wynik, int iterator, int condition) {
+string deletezeros(string napis) {
+	if ( napis[0] == '0' ) {
+		napis.erase(0,1);
+		return deletezeros(napis);
+	}
+	return napis;
+}
 
+string AddMany (const string* argv, string &wynik, int iterator, int condition) {
 	if ( iterator < condition ) {
-
-		if ( wynik[0] == '-' && argv[iterator][0] == '-' )  {
+		if ( wynik[0] != '-' && argv[iterator][0] != '-' )  {
 			string copy = argv[iterator];
 			if ( copy[0] == '+' ) copy.erase(0, 1);
 			wynik = Add(wynik, copy);
 		}
-
 		else if (wynik[0] == '-' && argv[iterator][0] == '-') {
-			wynik[0]=0;
+			wynik.erase(0, 1);
 			string copy = argv[iterator];
-			copy[0]=0;
-			wynik = '-'+Add(wynik, copy);
+			copy.erase(0, 1);
+			wynik = '-' + Add(wynik, copy);
 
 		}
 		else if ( wynik[0]=='-' ) {
 			string copy = argv[iterator];
 			if ( copy[0] == '+' ) copy.erase(0, 1);
-			wynik[0]=0;
 			wynik.erase(0, 1);
 			if ( smaller ( wynik, copy ) ) {
 				wynik = Diff(wynik, copy);
@@ -210,18 +206,22 @@ string AddMany (const string* argv, string wynik, int iterator, int condition) {
 			//arcgv[0]=='-'//
 			string copy = argv[iterator];
 			copy.erase(0, 1);
-			if ( smaller ( wynik, argv[iterator] ) ) {
-				wynik = '-' + Diff(wynik, argv[iterator]);
+			if ( smaller ( wynik, copy ) ) {
+				wynik = '-' + Diff(wynik, copy);
 			}
 			else {
-				wynik = Diff(wynik, argv[iterator]);
+				wynik = Diff(wynik, copy );
 			}
 		}
-
+		if ( wynik[0] == '-' ) {
+			wynik = deletezeros(wynik);
+			wynik = '-' + wynik;
+		}
+		else wynik = deletezeros(wynik);
+		if ( wynik == "" || wynik == "-0" || wynik == "-" ) wynik = "0";
 		return AddMany(argv, wynik, iterator+1, condition);
 	}
 	return wynik;
-
 }
 
 string Sum (int argc, const string* argv) {
@@ -231,12 +231,67 @@ string Sum (int argc, const string* argv) {
 
 }
 
-string Sum ( int argc, ... ) {
+string AddVa(va_list lista, string &wynik, int iterator, int condition) {
+	if ( iterator < condition ) {
 
+		if ( wynik[0] != '-' && va_arg(lista, string)[0] != '-' )  {
+			string copy = va_arg(lista, string);
+			if ( copy[0] == '+' ) copy.erase(0, 1);
+			wynik = Add(wynik, copy);
+		}
+		else if (wynik[0] == '-' && va_arg(lista, string)[0] == '-') {
+			wynik.erase(0, 1);
+			string copy = va_arg(lista, string);
+			copy.erase(0, 1);
+			wynik = '-' + Add(wynik, copy);
+
+		}
+		else if ( wynik[0]=='-' ) {
+			string copy = va_arg(lista, string);
+			if ( copy[0] == '+' ) copy.erase(0, 1);
+			wynik.erase(0, 1);
+			if ( smaller ( wynik, copy ) ) {
+				wynik = Diff(wynik, copy);
+			}
+			else {
+				wynik = '-' + Diff(wynik, copy);
+			}
+		}
+		else {
+			//arcgv[0]=='-'//
+			string copy = va_arg(lista, string);
+			copy.erase(0, 1);
+			if ( smaller ( wynik, copy ) ) {
+				wynik = '-' + Diff(wynik, copy);
+			}
+			else {
+				wynik = Diff(wynik, copy);
+			}
+		}
+		if ( wynik[0] == '-' ) {
+			wynik = deletezeros(wynik);
+			wynik = '-' + wynik;
+		}
+		else wynik = deletezeros(wynik);
+		if ( wynik == "" || wynik == "-0" || wynik == "-" ) wynik = "0";
+		return AddVa(lista, wynik, iterator+1, condition);
+
+	} 
+	else return wynik;
+}
+
+string Sum ( int argc, ... ) {
+	string wynik = "0";
+	va_list lista;
+
+	va_start(lista, argc);
+
+
+	return AddVa(lista, wynik, 0, argc );
 }
 
 int main () {
 
-	cout << Diff("100", "100");
+	cout << Diff("254", "255");
 
 }
