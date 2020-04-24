@@ -1,7 +1,5 @@
 //Magdalena Lipka//
-#include <iostream>
-#include <string>
-#include <cstdarg>
+
 using namespace std;
 
 
@@ -442,7 +440,7 @@ string MultVa (va_list lista, string &wynik, int iterator, int condition) {
 	return wynik;
 }
 string Mult ( int argc, ... ) {
-	string wynik = "";
+	string wynik = "1";
 	va_list lista;
 	va_start(lista, argc);
 	return MultVa(lista, wynik, 0, argc );
@@ -469,44 +467,44 @@ void Mult ( string &wynik, int liczba, ... ) {
 }
 
 
+//Operacje......................................................................//
+//..............................................................................//
 
-
+void Przepisz( string* destination, va_list source, int licznik, int warunek) {
+	if ( licznik < warunek ) {
+		destination[licznik] = va_arg(source, char*);
+		Przepisz ( destination, source, licznik+1, warunek );
+	}
+}
 
 string Operation ( string (*funkcja) (int, const string*), int liczba, const string* napis ) {
-
 	return funkcja(liczba, napis);
-
 }
 string Operation ( string (*funkcja) (int, const string*), int liczba, ... ) {
-	
 	va_list lista;
-	va_start(lista, liczba);
-	string des = "1";
-	//return funkcja(va_lista, );
-
+	va_start ( lista, liczba );
+	string *napis = new string[liczba];
+	Przepisz ( napis, lista, 0, liczba );
+	return funkcja ( liczba, napis );
 }
 void Operation ( string *wynik, string (*funkcja) (int, const string*), int liczba, const string* napis ) {
-
-
-	
+	*wynik = funkcja ( liczba, napis );
 }
 void Operation ( string *wynik, string (*funkcja) (int, const string*), int liczba, ... ) {
-	
+	va_list lista;
+	va_start ( lista, liczba );
+	string *napis = new string[liczba];
+	Przepisz ( napis, lista, 0, liczba );
+	*wynik = funkcja ( liczba, napis );
 }
 void Operation ( string &wynik, string (*funkcja) (int, const string*), int liczba, const string* napis ) {
-	
+	wynik = funkcja( liczba, napis );
 }
 void Operation ( string &wynik, string (*funkcja) (int, const string*), int liczba, ... ) {
-	
+	va_list lista;
+	va_start ( lista, liczba );
+	string *napis = new string[liczba];
+	Przepisz ( napis, lista, 0, liczba );
+	wynik = funkcja ( liczba, napis );	
 }
 
-int main () {
-
-	string odp;
-	Operation (&odp, Sum, 2, "3", "5");
-	cout << odp << endl;
-	Operation (&odp, Mult, 2, "20", "2");
-	cout << odp << endl;
-	return 0;
-
-}
