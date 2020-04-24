@@ -402,7 +402,7 @@ string MultMany (const string* argv, string &wynik, int iterator, int condition)
 }
 string Mult ( int argc, const string *argv ) {
 	
-	string wynik = "0";
+	string wynik = "1";
 	return MultMany( argv, wynik, 0, argc );
 
 }
@@ -442,7 +442,7 @@ string MultVa (va_list lista, string &wynik, int iterator, int condition) {
 	return wynik;
 }
 string Mult ( int argc, ... ) {
-	string wynik = "0";
+	string wynik = "";
 	va_list lista;
 	va_start(lista, argc);
 	return MultVa(lista, wynik, 0, argc );
@@ -453,7 +453,7 @@ void Mult ( string* wynik, int liczba, const string* napis ) {
 	*wynik = Mult ( liczba, napis );
 }
 void Mult ( string* wynik, int liczba, ... ) {
-	string des = "0";
+	string des = "1";
 	va_list lista;
 	va_start(lista, liczba);
 	*wynik = MultVa (lista, des, 0, liczba);
@@ -462,7 +462,7 @@ void Mult ( string &wynik, int liczba, const string* napis ) {
 	wynik = Mult ( liczba, napis );
 }
 void Mult ( string &wynik, int liczba, ... ) {
-	string des = "0";
+	string des = "1";
 	va_list lista;
 	va_start(lista, liczba);
 	wynik = MultVa (lista, des, 0, liczba);
@@ -481,11 +481,13 @@ string Operation ( string (*funkcja) (int, const string*), int liczba, ... ) {
 	
 	va_list lista;
 	va_start(lista, liczba);
-	string des = "0";
+	string des = "1";
 	//return funkcja(va_lista, );
 
 }
 void Operation ( string *wynik, string (*funkcja) (int, const string*), int liczba, const string* napis ) {
+
+
 	
 }
 void Operation ( string *wynik, string (*funkcja) (int, const string*), int liczba, ... ) {
@@ -500,18 +502,11 @@ void Operation ( string &wynik, string (*funkcja) (int, const string*), int licz
 
 int main () {
 
-
-	string napis[] = {"1", "2", "3", "4", "5"};
-
-	string wynik = "1";
-
-	//cout << multchar(wynik, carry, a, c, 0, a.length()) << endl;
-	
-
-	cout << MultMany ( napis, wynik, 0, 5 ) << endl;
-	//cout << "carry: " << carry << endl;
-	
-
+	string odp;
+	Operation (&odp, Sum, 2, "3", "5");
+	cout << odp << endl;
+	Operation (&odp, Mult, 2, "20", "2");
+	cout << odp << endl;
 	return 0;
 
 }
