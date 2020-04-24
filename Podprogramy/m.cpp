@@ -225,7 +225,6 @@ string AddMany (const string* argv, string &wynik, int iterator, int condition) 
 	}
 	return wynik;
 }
-
 string Sum (int argc, const string* argv) {
 
 	string wynik = "0";
@@ -278,7 +277,6 @@ string AddVa(va_list lista, string &wynik, int iterator, int condition) {
 	} 
 	else return wynik;
 }
-
 string Sum ( int argc, ... ) {
 	string wynik = "0";
 	va_list lista;
@@ -346,7 +344,6 @@ string mult2(string &wynik, int &carryover, string liczba1, string liczba2, int 
 	}
 	else return wynik;
 }
-
 string MultTwo (string liczba1, string liczba2) {
 	string des = "";
 
@@ -403,29 +400,72 @@ string MultMany (const string* argv, string &wynik, int iterator, int condition)
 	}
 	return wynik;
 }
-
-
-string Mult ( int liczba, const string *napis ) {
-
-	return "0";
-}
-string Mult ( int liczba, ... ) {
+string Mult ( int argc, const string *argv ) {
 	
-	return "0";
+	string wynik = "0";
+	return MultMany( argv, wynik, 0, argc );
+
 }
 
+string MultVa (va_list lista, string &wynik, int iterator, int condition) {
+	string copy = va_arg(lista, char*);
+	if ( iterator < condition ) {
+		if ( wynik[0] != '-' && copy[0] != '-' )  {
+			if ( copy[0] == '+' ) copy.erase(0, 1);
+			wynik = MultTwo(wynik, copy);
+		}
+		else if (wynik[0] == '-' && copy[0] == '-') {
+			wynik.erase(0, 1);
+			copy.erase(0, 1);
+			wynik = MultTwo(wynik, copy);
 
-void Mult ( string *wynik, int liczba, const string *napis  ) {
-	
+		}
+		else if ( wynik[0]=='-' ) {
+			if ( copy[0] == '+' ) copy.erase(0, 1);
+			wynik.erase(0, 1);
+			wynik = '-' + MultTwo(wynik, copy);
+			}
+		else {
+			//arcgv[0]=='-'//
+			copy.erase(0, 1);
+			wynik = '-' + MultTwo(wynik, copy);
+		}
+		if ( wynik[0] == '-' ) {
+			wynik.erase(0, 1);
+			wynik = deletezeros(wynik);
+			wynik = '-' + wynik;
+		}
+		else wynik = deletezeros(wynik);
+		if ( wynik == "" || wynik == "-0" || wynik == "-" ) wynik = "0";
+		return MultVa(lista, wynik, iterator+1, condition);
+	}
+	return wynik;
 }
-void Mult ( string *wynik, int liczba, ... ) {
-	
+string Mult ( int argc, ... ) {
+	string wynik = "0";
+	va_list lista;
+	va_start(lista, argc);
+	return MultVa(lista, wynik, 0, argc );
 }
-void Mult ( string &wynik, int liczba, const string *napis ) {
-	
+
+
+void Mult ( string* wynik, int liczba, const string* napis ) {
+	*wynik = Mult ( liczba, napis );
+}
+void Mult ( string* wynik, int liczba, ... ) {
+	string des = "0";
+	va_list lista;
+	va_start(lista, liczba);
+	*wynik = MultVa (lista, des, 0, liczba);
+}
+void Mult ( string &wynik, int liczba, const string* napis ) {
+	wynik = Mult ( liczba, napis );
 }
 void Mult ( string &wynik, int liczba, ... ) {
-	
+	string des = "0";
+	va_list lista;
+	va_start(lista, liczba);
+	wynik = MultVa (lista, des, 0, liczba);
 }
 
 
