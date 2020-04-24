@@ -305,12 +305,173 @@ void Sum ( string &wynik, int liczba, ... ) {
 	wynik = AddVa (lista, des, 0, liczba);
 }
 
+//Mnozenia......................................................................//
+//..............................................................................//
+
+string addzeros(string zera, int iterator, int condition) {
+	if ( iterator < condition ) {
+		zera += "0";
+		return addzeros(zera, iterator+1, condition);
+	}
+	else return zera;
+}
+
+string multchar (string wynik, int &carryover, string liczba, char mnoznik, int iterator, int condition) {
+	if ( iterator < condition ) {
+		int prod = ( liczba[iterator] - 48 )*( mnoznik - 48 ) + carryover;
+
+		wynik += (char)  ( prod%10 + 48 );
+		carryover = prod/10;
+		
+		return multchar ( wynik, carryover, liczba, mnoznik, iterator+1, condition );
+	}
+	else return wynik;
+}
+string mult2(string &wynik, int &carryover, string liczba1, string liczba2, int iterator, int condition ) {
+	if ( iterator < condition ) {
+
+		string pomwynik = "";
+		int pomcarryover = 0;
+		pomwynik = multchar ( pomwynik, pomcarryover, liczba1, liczba2[iterator], 0, liczba1.length() );
+
+		if ( pomcarryover ) pomwynik += (char) ( pomcarryover + 48 );
+
+		string pom1 = reverse ( wynik );
+		string pom2 = reverse ( pomwynik ) + addzeros("", 0, iterator);
+
+		wynik = reverse ( Add ( pom1, pom2 ) );
+
+		return  mult2(wynik, carryover, liczba1, liczba2, iterator+1, condition);
+
+	}
+	else return wynik;
+}
+
+string MultTwo (string liczba1, string liczba2) {
+	string des = "";
+
+	int len1 = liczba1.length();
+	int len2 = liczba2.length();
+	if ( len1 == 0 || len2 == 0 ) return "0";
+
+	liczba1 = reverse(liczba1);
+	liczba2 = reverse(liczba2);
+
+	int carryover = 0;
+
+	des = mult2(des, carryover, liczba1, liczba2, 0, len2);
+	if ( carryover ) des += (char) ( carryover + 48 );
+	des = reverse(des);
+
+	return des;
+}
+
+string MultMany (const string* argv, string &wynik, int iterator, int condition) {
+	if ( iterator < condition ) {
+		if ( wynik[0] != '-' && argv[iterator][0] != '-' )  {
+			string copy = argv[iterator];
+			if ( copy[0] == '+' ) copy.erase(0, 1);
+			wynik = MultTwo(wynik, copy);
+		}
+		else if (wynik[0] == '-' && argv[iterator][0] == '-') {
+			wynik.erase(0, 1);
+			string copy = argv[iterator];
+			copy.erase(0, 1);
+			wynik = MultTwo(wynik, copy);
+
+		}
+		else if ( wynik[0]=='-' ) {
+			string copy = argv[iterator];
+			if ( copy[0] == '+' ) copy.erase(0, 1);
+			wynik.erase(0, 1);
+			wynik = '-' + MultTwo(wynik, copy);
+			}
+		else {
+			//arcgv[0]=='-'//
+			string copy = argv[iterator];
+			copy.erase(0, 1);
+			wynik = '-' + MultTwo(wynik, copy);
+		}
+		if ( wynik[0] == '-' ) {
+			wynik.erase(0, 1);
+			wynik = deletezeros(wynik);
+			wynik = '-' + wynik;
+		}
+		else wynik = deletezeros(wynik);
+		if ( wynik == "" || wynik == "-0" || wynik == "-" ) wynik = "0";
+		return MultMany(argv, wynik, iterator+1, condition);
+	}
+	return wynik;
+}
+
+
+string Mult ( int liczba, const string *napis ) {
+
+	return "0";
+}
+string Mult ( int liczba, ... ) {
+	
+	return "0";
+}
+
+
+void Mult ( string *wynik, int liczba, const string *napis  ) {
+	
+}
+void Mult ( string *wynik, int liczba, ... ) {
+	
+}
+void Mult ( string &wynik, int liczba, const string *napis ) {
+	
+}
+void Mult ( string &wynik, int liczba, ... ) {
+	
+}
+
+
+
+
+
+string Operation ( string (*funkcja) (int, const string*), int liczba, const string* napis ) {
+
+	return funkcja(liczba, napis);
+
+}
+string Operation ( string (*funkcja) (int, const string*), int liczba, ... ) {
+	
+	va_list lista;
+	va_start(lista, liczba);
+	string des = "0";
+	//return funkcja(va_lista, );
+
+}
+void Operation ( string *wynik, string (*funkcja) (int, const string*), int liczba, const string* napis ) {
+	
+}
+void Operation ( string *wynik, string (*funkcja) (int, const string*), int liczba, ... ) {
+	
+}
+void Operation ( string &wynik, string (*funkcja) (int, const string*), int liczba, const string* napis ) {
+	
+}
+void Operation ( string &wynik, string (*funkcja) (int, const string*), int liczba, ... ) {
+	
+}
+
 int main () {
 
-	string napis[] = {"+000","-0"};
 
-	cout << Sum(2, napis);
+	string napis[] = {"1", "2", "3", "4", "5"};
 
-  return 0;
+	string wynik = "1";
+
+	//cout << multchar(wynik, carry, a, c, 0, a.length()) << endl;
+	
+
+	cout << MultMany ( napis, wynik, 0, 5 ) << endl;
+	//cout << "carry: " << carry << endl;
+	
+
+	return 0;
 
 }
