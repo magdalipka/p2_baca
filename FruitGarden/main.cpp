@@ -18,12 +18,27 @@ class FRUIT_CLASS {
 	
 	public:
 
-	FRUIT_CLASS(FRUIT_CLASS* setprev = NULL, FRUIT_CLASS* setnext = NULL, unsigned int setweight = 0, unsigned int setlength = 0, BRANCH_CLASS* setmother = NULL) {
+	FRUIT_CLASS() {
+		prevFruit = NULL;
+		nextFruit = NULL;
+		weight = 0;
+		length = 0;
+		motherBranch = NULL;
+	}
+
+	FRUIT_CLASS(FRUIT_CLASS* setprev, FRUIT_CLASS* setnext, unsigned int setweight, unsigned int setlength, BRANCH_CLASS* setmother) {
 		prevFruit = setprev;
 		nextFruit = setnext;
 		weight = setweight;
 		length = setlength;
 		motherBranch = setmother;
+	}
+	FRUIT_CLASS(FRUIT_CLASS* sourceFruit) {
+		prevFruit = NULL;
+		nextFruit = NULL;
+		weight = (*sourceFruit).getWeight();
+		length = (*sourceFruit).getLength();
+		motherBranch = (*sourceFruit).getBranchPointer();
 	}
 
 	FRUIT_CLASS* getnextFruit() {
@@ -92,9 +107,19 @@ class BRANCH_CLASS {
 
 	public:
 
-	BRANCH_CLASS(FRUIT_CLASS* setfirst = NULL, FRUIT_CLASS* setlast = NULL, BRANCH_CLASS* setnext = NULL, BRANCH_CLASS* setprev = NULL, WOOD_CLASS* setmother = NULL, unsigned int setheight = 0, unsigned int setlength = 0) {
+	BRANCH_CLASS() {
+		firstFruit = NULL;
+		lastFruit = NULL;
+		prevBranch = NULL;
+		nextBranch = NULL;
+		motherWood = NULL;
+		height = 0;
+		length = 0;
+	}
+
+	BRANCH_CLASS(FRUIT_CLASS* setfirst, FRUIT_CLASS* setlast, BRANCH_CLASS* setnext, BRANCH_CLASS* setprev, WOOD_CLASS* setmother, unsigned int setheight, unsigned int setlength) {
 		firstFruit = setfirst;
-		firstFruit = setlast;
+		lastFruit = setlast;
 		prevBranch = setprev;
 		nextBranch = setnext;
 		motherWood = setmother;
@@ -102,26 +127,52 @@ class BRANCH_CLASS {
 		length = setlength;
 	}
 
-	BRANCH_CLASS(BRANCH_CLASS* sourceBranch) {
-		// *firstFruit = (*sourceBranch).getFirstFruit();
-		// *nextBranch = (*sourceBranch).getnextBranch();
-		motherWood = (*sourceBranch).getmotherWood();
-		height = (*sourceBranch).getHeight();
-		length = (*sourceBranch).getLength();
-		FRUIT_CLASS* fruit = (*sourceBranch).getFirstFruit();
+	BRANCH_CLASS(const BRANCH_CLASS& sourceBranch) {
 
-		if ( fruit == NULL ) firstFruit = NULL;
-		else {
-				FRUIT_CLASS* sourceFruit = (*sourceBranch).getFirstFruit();
+		//BRANCH_CLASS* newBranch = new BRANCH_CLASS();
+		
+		/* odkomentowaanie tej czesti => incomplete type
+		*/
+		firstFruit = new FRUIT_CLASS();
+		firstFruit = new FRUIT_CLASS();
+		prevBranch = new BRANCH_CLASS();
+		nextBranch = new BRANCH_CLASS();
+		motherWood = new WOOD_CLASS();
+		/**/
 
-				while ( fruit != NULL ) {
-					FRUIT_CLASS* newFruit = new FRUIT_CLASS(  );
+		(*this).height = 0;
+		(*this).length = 0;
 
-					//DOPISAC KOPIOWANIE
+		(*this).motherWood = (*sourceBranch).getmotherWood();
+		(*this).height = (*sourceBranch).getHeight();
+		(*this).length = (*sourceBranch).getLength();
+		(*this).prevBranch = NULL;
+		(*this).nextBranch = NULL;
 
-			}	
+		//skopiowanie infomacji o owocach
+
+		if ( (*sourceBranch).getFirstFruit() == NULL ) {
+			(*this).firstFruit = NULL;
+			(*this).lastFruit == NULL;
 		}
+		else {
+			FRUIT_CLASS* sourceFruit = (*sourceBranch).getFirstFruit();
+			//pierwszy owoc
+			FRUIT_CLASS* newFruit = new FRUIT_CLASS(sourceFruit);
+			(*this).firstFruit = newFruit;
+			//srodkowe owoce
+			while ( (*sourceFruit).getnextFruit() != NULL ) {
+				sourceFruit = (*sourceFruit).getnextFruit();
+				FRUIT_CLASS* nextFruit = new FRUIT_CLASS(sourceFruit);
+				(*newFruit).setnextFruit(nextFruit);
+				(*nextFruit).setprevFruit(newFruit);
+				newFruit = nextFruit;
 
+			}
+			//ostatni owoc
+			(*this).lastFruit = newFruit;
+		}
+		
 	}
 
 	void deleteContents() {
