@@ -19,11 +19,11 @@ class FRUIT_CLASS {
 	public:
 
 	FRUIT_CLASS() {
-		prevFruit = NULL;
-		nextFruit = NULL;
-		weight = 0;
-		length = 0;
-		motherBranch = NULL;
+		(*this).prevFruit = NULL;
+		(*this).nextFruit = NULL;
+		(*this).weight = 0;
+		(*this).length = 0;
+		(*this).motherBranch = NULL;
 	}
 
 	FRUIT_CLASS(FRUIT_CLASS* setprev, FRUIT_CLASS* setnext, unsigned int setweight, unsigned int setlength, BRANCH_CLASS* setmother) {
@@ -127,18 +127,18 @@ class BRANCH_CLASS {
 		length = setlength;
 	}
 
-	BRANCH_CLASS(const BRANCH_CLASS& sourceBranch) {
+	BRANCH_CLASS(BRANCH_CLASS* sourceBranch) {
 
 		//BRANCH_CLASS* newBranch = new BRANCH_CLASS();
 		
 		/* odkomentowaanie tej czesti => incomplete type
-		*/
+		
 		firstFruit = new FRUIT_CLASS();
 		firstFruit = new FRUIT_CLASS();
 		prevBranch = new BRANCH_CLASS();
 		nextBranch = new BRANCH_CLASS();
 		motherWood = new WOOD_CLASS();
-		/**/
+		*/
 
 		(*this).height = 0;
 		(*this).length = 0;
