@@ -42,6 +42,7 @@ class FRUIT_CLASS {
 		(*this).motherBranch = (sourceFruit).getBranchPointer();
 	}
 
+
 	FRUIT_CLASS* getnextFruit() {
 		return nextFruit;
 	}
@@ -790,7 +791,7 @@ class GARDEN_CLASS {
 			WOOD_CLASS* newLast = (*lastWood).getprevWood();
 			maxid = (*newLast).getNumber();
 			delete lastWood;
-			(*newLast).setprevWood(NULL);
+			(*newLast).setnextWood(NULL);
 			lastWood = newLast;
 		}
 		else {
@@ -807,6 +808,7 @@ class GARDEN_CLASS {
 				if ( (*temp).getNumber() > seekid ) break;
 				temp = (*temp).getnextWood();
 			}
+		
 		}
 		woods--;
 	}
@@ -902,7 +904,7 @@ class GARDEN_CLASS {
 			}
 		}
 
-		woods++;
+		//woods++;
 
 	}
 
@@ -917,3 +919,6 @@ class GARDEN_CLASS {
 	}
 
 };
+
+
+
