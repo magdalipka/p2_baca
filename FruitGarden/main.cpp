@@ -627,7 +627,19 @@ class WOOD_CLASS {
 			}
 			temp = (*temp).getnextBranch();
 		}
-		if ( seekbranch == NULL ) return;
+		if ( seekbranch == NULL || seekbranch == branch ) return;
+/*
+		unsigned int oldHeight = (*seekbranch).getHeight();
+		BRANCH_CLASS* left = (*seekbranch).getprevBranch();
+		BRANCH_CLASS* right = (*seekbranch).getnextBranch();
+		*seekbranch = BRANCH_CLASS(*branch);
+		(*seekbranch).setHeight(oldHeight);
+		(*seekbranch).setnextBranch(right);
+		(*seekbranch).setprevBranch(left);
+		if ( left != NULL ) (*left).setnextBranch(seekbranch);
+		if ( right != NULL ) (*right).setprevBranch(seekbranch);
+*/	
+
 		
 		BRANCH_CLASS* newBranch = new BRANCH_CLASS(*branch);
 		BRANCH_CLASS* left = (*seekbranch).getprevBranch();
@@ -637,8 +649,10 @@ class WOOD_CLASS {
 		(*newBranch).setprevBranch(left);
 		if ( left != NULL ) (*left).setnextBranch(newBranch);
 		if ( right != NULL ) (*right).setprevBranch(newBranch);
+		if ( seekbranch == firstBranch ) firstBranch = newBranch; 
+		if ( seekbranch == lastBranch ) lastBranch = newBranch; 
 	
-		delete seekbranch;
+		//delete seekbranch;
 	
 	}
 	
@@ -683,8 +697,8 @@ class GARDEN_CLASS {
 		}
 	}
 
-	void decreaseWoods() {
-		woods--;
+	unsigned int getWoods() {
+		return woods;
 	}
 
 	unsigned int getWoodsTotal() {
@@ -774,7 +788,7 @@ class GARDEN_CLASS {
 
 	void extractWood(unsigned int seekid) {
 		if ( woods == 0 ) return; 
-		
+		if ( woods == 1 && (*firstWood).getNumber() != seekid ) return;
 		if ( woods == 1 && (*firstWood).getNumber() == seekid ) {
 			delete firstWood;
 			firstWood = NULL;
@@ -851,9 +865,10 @@ class GARDEN_CLASS {
 			temp = (*temp).getnextWood();
 		}
 		if ( seekwood == NULL ) return;
+		
+		WOOD_CLASS* newWood  = new WOOD_CLASS(*seekwood);
 
 		if ( maxid + 1 == woods ) {
-			WOOD_CLASS* newWood  = new WOOD_CLASS(*seekwood);
 			(*newWood).setNumber(maxid+1);
 			maxid++;
 			(*newWood).setprevWood(lastWood);
@@ -862,7 +877,6 @@ class GARDEN_CLASS {
 		}
 		else if ( woods == 1 ) {
 			if ( seekid == 0 ) {
-				WOOD_CLASS* newWood  = new WOOD_CLASS(*seekwood);
 				(*newWood).setNumber(1);
 				(*firstWood).setnextWood(newWood);
 				(*newWood).setprevWood(firstWood);
@@ -870,7 +884,6 @@ class GARDEN_CLASS {
 				maxid = 1;
 			}
 			else {
-				WOOD_CLASS* newWood  = new WOOD_CLASS(*seekwood);
 				(*newWood).setNumber(0);
 				(*firstWood).setprevWood(newWood);
 				(*newWood).setnextWood(firstWood);
@@ -879,14 +892,12 @@ class GARDEN_CLASS {
 		}
 		else {
 			if ( (*firstWood).getNumber() != 0 ) {
-				WOOD_CLASS* newWood  = new WOOD_CLASS(*seekwood);
 				(*newWood).setNumber(0);
 				(*newWood).setnextWood(firstWood);
 				(*firstWood).setprevWood(newWood);
 				firstWood = newWood;
 			}
 			else {
-				WOOD_CLASS* newWood  = new WOOD_CLASS(*seekwood);
 				WOOD_CLASS* temp = firstWood;
 				while ( temp != NULL ) {
 					if ( (*temp).getNumber() + 1 < (*(*temp).getnextWood()).getNumber() ) {
@@ -900,12 +911,9 @@ class GARDEN_CLASS {
 					temp = (*temp).getnextWood();
 				}
 
-
 			}
 		}
-
-		//woods++;
-
+		woods++;
 	}
 
 	WOOD_CLASS* getWoodPointer(unsigned int num) {
@@ -918,7 +926,26 @@ class GARDEN_CLASS {
 		return NULL;
 	}
 
-};
+	void showGarden() {
+		WOOD_CLASS* wood = firstWood;
+		while ( wood != NULL ) {
+			cout << "\nDRZEWO-----\n";
+			BRANCH_CLASS* branch = (*wood).getfirstBranch();
+			while ( branch != NULL ) {
+				cout << "   Galaz----\n";
+				FRUIT_CLASS* fruit = (*branch).getFirstFruit();
+				while ( fruit != NULL ) {
+					cout << "-(" << (*fruit).getWeight() << ")";
+					fruit = (*fruit).getnextFruit();
+				}
+				cout << "\n   Koniec-Galaz-----\n";
+				branch = (*branch).getnextBranch();
+			}
+			cout << "KONIEC-DRZEWO-----\n";
+			wood = (*wood).getnextWood();
+		}
+	}
 
+};
 
 
