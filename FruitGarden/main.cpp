@@ -435,6 +435,7 @@ class WOOD_CLASS {
 	}
 
 	~WOOD_CLASS() {
+		//if ( motherGarden != NULL ) (*motherGarden).decreaseWoods();
 		BRANCH_CLASS* branch = firstBranch;
 		BRANCH_CLASS* temp;
 		while ( branch != NULL ) {
@@ -647,6 +648,19 @@ class GARDEN_CLASS {
 		woods = 0;
 		maxid = 0;
 	}
+	~GARDEN_CLASS() {
+		WOOD_CLASS* wood = firstWood;
+		WOOD_CLASS* temp;
+		while ( wood != NULL ) {
+			temp = (*wood).getnextWood();
+			delete wood;
+			wood = temp;
+		}
+	}
+
+	void decreaseWoods() {
+		woods--;
+	}
 
 	unsigned int getWoodsTotal() {
 		return woods;
@@ -712,6 +726,7 @@ class GARDEN_CLASS {
 			}
 			else if ( (*firstWood).getNumber() != 0 ) {
 				WOOD_CLASS* newWood = new WOOD_CLASS(NULL, NULL, firstWood, NULL, this, 0, 0);
+				(*firstWood).setprevWood(firstWood);
 				firstWood = newWood;
 			}
 			else {
@@ -735,7 +750,6 @@ class GARDEN_CLASS {
 	void extractWood(unsigned int seekid) {
 		if ( woods == 0 ) return; 
 		
-
 		if ( woods == 1 && (*firstWood).getNumber() == seekid ) {
 			delete firstWood;
 			firstWood = NULL;
@@ -766,6 +780,7 @@ class GARDEN_CLASS {
 					(*right).setprevWood(left);
 					break;
 				}
+				if ( (*temp).getNumber() > seekid ) break;
 				temp = (*temp).getnextWood();
 			}
 		}
@@ -880,6 +895,14 @@ class GARDEN_CLASS {
 };
 
 
+
+
+
+/*
+####################################################
+*/
+
+#include <iostream>
 
 int main(){
 	std::cout << "\n";
@@ -1365,7 +1388,7 @@ int main(){
 		if(2 != wood.getBranchesTotal()){ std::cout << "BLAD - #" << calc << "\n" << wood.getBranchesTotal() << "\n"; } else { std::cout << "OK - #" << calc << "\n"; }; calc++;
 		if(2 != wood.getFruitsTotal()){ std::cout << "BLAD - #" << calc << "\n" << wood.getFruitsTotal() << "\n"; } else { std::cout << "OK - #" << calc << "\n"; }; calc++;
 		if(2 != wood.getWeightsTotal()){ std::cout << "BLAD - #" << calc << "\n" << wood.getWeightsTotal() << "\n"; } else { std::cout << "OK - #" << calc << "\n"; }; calc++;
-//16
+
 
 		wood.fadeWood();
 		if(6 != wood.getHeight()){ std::cout << "BLAD - #" << calc << "\n" << wood.getHeight() << "\n"; } else { std::cout << "OK - #" << calc << "\n"; }; calc++;
@@ -1394,7 +1417,7 @@ int main(){
 		if(0 != wood.getFruitsTotal()){ std::cout << "BLAD - #" << calc << "\n" << wood.getFruitsTotal() << "\n"; } else { std::cout << "OK - #" << calc << "\n"; }; calc++;
 		if(0 != wood.getWeightsTotal()){ std::cout << "BLAD - #" << calc << "\n" << wood.getWeightsTotal() << "\n"; } else { std::cout << "OK - #" << calc << "\n"; }; calc++;
 
-//32
+
 		wood.fadeWood();
 		if(2 != wood.getHeight()){ std::cout << "BLAD - #" << calc << "\n" << wood.getHeight() << "\n"; } else { std::cout << "OK - #" << calc << "\n"; }; calc++;
 		if(0 != wood.getBranchesTotal()){ std::cout << "BLAD - #" << calc << "\n" << wood.getBranchesTotal() << "\n"; } else { std::cout << "OK - #" << calc << "\n"; }; calc++;
@@ -1580,12 +1603,11 @@ int main(){
 		std::cout << "----------------------------------------\n" << "GardenPlant\n\n";
 		GARDEN_CLASS garden = GARDEN_CLASS();
 
-		for(int i=0; i<100000; i++){
+		for(int i=0; i<1000000; i++){
 			garden.plantWood();
-		//cout << i << " in for loop\n";
 		}
 		int calc = 1;
-		if(100 != garden.getWoodsTotal()){ std::cout << "BLAD - #" << calc << "\n" << garden.getWoodsTotal() << "\n"; } else { std::cout << "OK - #" << calc << "\n"; }; calc++;
+		if(1000000 != garden.getWoodsTotal()){ std::cout << "BLAD - #" << calc << "\n" << garden.getWoodsTotal() << "\n"; } else { std::cout << "OK - #" << calc << "\n"; }; calc++;
 		if(0 != garden.getBranchesTotal()){ std::cout << "BLAD - #" << calc << "\n" << garden.getBranchesTotal() << "\n"; } else { std::cout << "OK - #" << calc << "\n"; }; calc++;
 		if(0 != garden.getFruitsTotal()){ std::cout << "BLAD - #" << calc << "\n" << garden.getFruitsTotal() << "\n"; } else { std::cout << "OK - #" << calc << "\n"; }; calc++;
 		if(0 != garden.getWeightsTotal()){ std::cout << "BLAD - #" << calc << "\n" << garden.getWeightsTotal() << "\n"; } else { std::cout << "OK - #" << calc << "\n"; }; calc++;;
