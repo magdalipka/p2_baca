@@ -163,7 +163,7 @@ class BRANCH_CLASS {
 	
 	}
 
-	void deleteContents() {
+		~BRANCH_CLASS() {
 		FRUIT_CLASS* fruit = firstFruit;
 		FRUIT_CLASS* temp;
 		while ( fruit != NULL ) {
@@ -434,12 +434,11 @@ class WOOD_CLASS {
 
 	}
 
-	void deleteContents() {
+	~WOOD_CLASS() {
 		BRANCH_CLASS* branch = firstBranch;
 		BRANCH_CLASS* temp;
 		while ( branch != NULL ) {
 			temp = (*branch).getnextBranch();
-			(*branch).deleteContents();
 			delete branch;
 			branch = temp;
 		}
@@ -548,14 +547,12 @@ class WOOD_CLASS {
 		}
 		if ( (*lastBranch).getHeight() > height ) {
 			if ( lastBranch == firstBranch ) {
-				(*lastBranch).deleteContents();
 				delete lastBranch;
 				lastBranch = NULL;
 				firstBranch = NULL;
 			}
 			else {
 				BRANCH_CLASS* temp = (*lastBranch).getprevBranch();
-				(*lastBranch).deleteContents();
 				delete lastBranch;
 				lastBranch = temp;
 				(*lastBranch).setnextBranch(NULL);
@@ -616,7 +613,6 @@ class WOOD_CLASS {
 		BRANCH_CLASS* right = (*seekbranch).getnextBranch();
 		(*left).setnextBranch(newBranch);
 		(*right).setprevBranch(newBranch);
-		(*seekbranch).deleteContents();
 		delete seekbranch;
 	}
 	
@@ -741,7 +737,6 @@ class GARDEN_CLASS {
 		
 
 		if ( woods == 1 && (*firstWood).getNumber() == seekid ) {
-			(*firstWood).deleteContents();
 			delete firstWood;
 			firstWood = NULL;
 			lastWood = NULL;
@@ -749,7 +744,6 @@ class GARDEN_CLASS {
 		}
 		else if ( (*firstWood).getNumber() == seekid ) {
 			WOOD_CLASS* newFirst = (*firstWood).getnextWood();
-			(*firstWood).deleteContents();
 			delete firstWood;
 			(*newFirst).setprevWood(NULL);
 			firstWood = newFirst;
@@ -757,10 +751,9 @@ class GARDEN_CLASS {
 		else if ( (*lastWood).getNumber() == seekid ) {
 			WOOD_CLASS* newLast = (*lastWood).getprevWood();
 			maxid = (*newLast).getNumber();
-			(*lastWood).deleteContents();
-			delete firstWood;
+			delete lastWood;
 			(*newLast).setprevWood(NULL);
-			firstWood = newLast;
+			lastWood = newLast;
 		}
 		else {
 			WOOD_CLASS* temp = firstWood;
@@ -768,7 +761,6 @@ class GARDEN_CLASS {
 				if ( (*temp).getNumber() == seekid ) {
 					WOOD_CLASS* left = (*temp).getprevWood();
 					WOOD_CLASS* right = (*temp).getnextWood();
-					(*temp).deleteContents();
 					delete temp;
 					(*left).setnextWood(right);
 					(*right).setprevWood(left);
@@ -1588,7 +1580,7 @@ int main(){
 		std::cout << "----------------------------------------\n" << "GardenPlant\n\n";
 		GARDEN_CLASS garden = GARDEN_CLASS();
 
-		for(int i=0; i<100; i++){
+		for(int i=0; i<100000; i++){
 			garden.plantWood();
 		//cout << i << " in for loop\n";
 		}
