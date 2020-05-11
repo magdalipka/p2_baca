@@ -495,6 +495,10 @@ class WOOD_CLASS {
 		return id;
 	}
 
+	void setNumber(unsigned int num) {
+		id = num;
+	}
+
 	unsigned int getHeight() {
 		return height;
 	}
@@ -600,13 +604,22 @@ class WOOD_CLASS {
 			}
 			temp = (*temp).getnextBranch();
 		}
-		if ( seekbranch == NULL ) return;
+		if ( seekbranch == NULL || branch == NULL) return;
+		
+		
+		BRANCH_CLASS* newBranch = new BRANCH_CLASS(*branch);
 
-		//BRANCH_CLASS newBranch = new BRANCH_CLASS(branch); 
-			
-			
-			//NOT READY YET!!!
+		(*newBranch).setHeight((*seekbranch).getHeight());
+		(*newBranch).setnextBranch((*seekbranch).getnextBranch());
+		(*newBranch).setprevBranch((*seekbranch).getprevBranch());
+		BRANCH_CLASS* left = (*seekbranch).getprevBranch();
+		BRANCH_CLASS* right = (*seekbranch).getnextBranch();
+		(*left).setnextBranch(newBranch);
+		(*right).setprevBranch(newBranch);
+		(*seekbranch).deleteContents();
+		delete seekbranch;
 	}
+	
 
 	GARDEN_CLASS* getGardenPointer() {
 		return motherGarden;
@@ -791,7 +804,74 @@ class GARDEN_CLASS {
 		}
 	}
 
-	void cloneWood(unsigned int id) {
+	void cloneWood(unsigned int seekid) {
+
+		WOOD_CLASS* seekwood = NULL;
+		WOOD_CLASS* temp = firstWood;
+
+		while ( temp != NULL ) {
+			if ( (*temp).getNumber() == seekid ) {
+				seekwood = temp;
+				break;
+			}
+			if ( (*temp).getNumber() > seekid ) break;
+			temp = (*temp).getnextWood();
+		}
+		if ( seekwood == NULL ) return;
+
+		if ( maxid + 1 == woods ) {
+			WOOD_CLASS* newWood  = new WOOD_CLASS(*seekwood);
+			(*newWood).setNumber(maxid+1);
+			maxid++;
+			(*newWood).setprevWood(lastWood);
+			(*lastWood).setnextWood(newWood);
+			lastWood = newWood;
+		}
+		else if ( woods == 1 ) {
+			if ( seekid == 0 ) {
+				WOOD_CLASS* newWood  = new WOOD_CLASS(*seekwood);
+				(*newWood).setNumber(1);
+				(*firstWood).setnextWood(newWood);
+				(*newWood).setprevWood(firstWood);
+				lastWood = newWood;
+				maxid = 1;
+			}
+			else {
+				WOOD_CLASS* newWood  = new WOOD_CLASS(*seekwood);
+				(*newWood).setNumber(0);
+				(*firstWood).setprevWood(newWood);
+				(*newWood).setnextWood(firstWood);
+				firstWood = newWood;
+			}
+		}
+		else {
+			if ( (*firstWood).getNumber() != 0 ) {
+				WOOD_CLASS* newWood  = new WOOD_CLASS(*seekwood);
+				(*newWood).setNumber(0);
+				(*newWood).setnextWood(firstWood);
+				(*firstWood).setprevWood(newWood);
+				firstWood = newWood;
+			}
+			else {
+				WOOD_CLASS* newWood  = new WOOD_CLASS(*seekwood);
+				WOOD_CLASS* temp = firstWood;
+				while ( temp != NULL ) {
+					if ( (*temp).getNumber() + 1 < (*(*temp).getnextWood()).getNumber() ) {
+						WOOD_CLASS* right = (*temp).getnextWood();
+						(*newWood).setnextWood(right);
+						(*newWood).setprevWood(temp);
+						(*temp).setnextWood(newWood);
+						(*right).setprevWood(newWood);
+						break;
+					}
+					temp = (*temp).getnextWood();
+				}
+
+
+			}
+		}
+
+		woods++;
 
 	}
 
