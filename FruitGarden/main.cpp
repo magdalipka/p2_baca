@@ -746,7 +746,9 @@ class GARDEN_CLASS {
 	}
 
 	void plantWood() {
-		
+		//if ( woods != getWoodsTotal() ) throw 3; 
+		//if ( lastWood != NULL && maxid != (*lastWood).getNumber() ) throw 3;
+		//if ( maxid +1< woods ) throw 3;
 		if ( woods == 0 ) {
 			WOOD_CLASS* newWood = new WOOD_CLASS(NULL, NULL, NULL, NULL, this, 0, 0);
 			firstWood = newWood;
@@ -754,22 +756,34 @@ class GARDEN_CLASS {
 			maxid = 0;
 		}
 		else if ( maxid + 1 == woods ) {
+			
 			WOOD_CLASS* newWood = new WOOD_CLASS(NULL, NULL, NULL, lastWood, this, maxid + 1, 0 );
 			(*lastWood).setnextWood(newWood);
 			lastWood = newWood;
-			maxid++;
+			maxid = (*lastWood).getNumber();
 		}
 		else if ( (*firstWood).getNumber() != 0 ) {
 			WOOD_CLASS* newWood = new WOOD_CLASS(NULL, NULL, firstWood, NULL, this, 0, 0);
-			(*firstWood).setprevWood(firstWood);
+			(*firstWood).setprevWood(newWood);
 			firstWood = newWood;
 		}
 		else {
 			/**/
 			//znalezienie miejsca do wstawienia
 			WOOD_CLASS* temp = firstWood;
+			
 			while ( temp != NULL ) {
-				if ((*temp).getnextWood() == NULL) woods--;
+				if ( (*temp).getprevWood() != NULL && (*temp).getNumber() == (*(*temp).getprevWood()).getNumber() ) throw 3;
+				//if ((*temp).getnextWood() == NULL) woods--;
+				if ( temp == lastWood ) {
+					throw 3;
+					WOOD_CLASS* newWood = new WOOD_CLASS(NULL, NULL, NULL, lastWood, this, maxid + 1, 0 );
+					(*lastWood).setnextWood(newWood);
+					lastWood = newWood;
+					maxid = (*lastWood).getNumber();
+					break;
+					//woods--;	
+				}
 				if ( (*temp).getnextWood() != NULL && (*temp).getNumber() + 1 < (*(*temp).getnextWood()).getNumber() ) {
 					WOOD_CLASS* right = (*temp).getnextWood();
 					WOOD_CLASS* newWood = new WOOD_CLASS(NULL, NULL, right, temp, this, (*temp).getNumber() + 1, 0);
@@ -780,15 +794,18 @@ class GARDEN_CLASS {
 				temp = (*temp).getnextWood();
 			}
 			/**/
-			//woods--;
-		
 		}
+		maxid = (*lastWood).getNumber();
 		woods++;
 	}
 
 	void extractWood(unsigned int seekid) {
+		//if ( woods != getWoodsTotal() ) throw 3; 
+		//if ( lastWood != NULL && maxid != (*lastWood).getNumber() ) throw 3;
+		//if ( maxid +1< woods ) throw 3;
+
 		bool deleted = false;
-		if ( woods == 0 || firstWood == NULL) return; 
+		if ( woods == 0 ) return; 
 		if ( woods == 1 && (*firstWood).getNumber() != seekid ) return;
 		if ( woods == 1 && (*firstWood).getNumber() == seekid ) {
 			WOOD_CLASS* todelete = firstWood;
@@ -799,6 +816,7 @@ class GARDEN_CLASS {
 			delete todelete;
 		}
 		else if ( (*firstWood).getNumber() == seekid ) {
+			if ( (*firstWood).getnextWood() == NULL ) throw 3;
 			WOOD_CLASS* todelete = firstWood;
 			firstWood = (*firstWood).getnextWood();
 			(*firstWood).setprevWood(NULL);
@@ -806,6 +824,7 @@ class GARDEN_CLASS {
 			delete todelete;
 		}
 		else if ( (*lastWood).getNumber() == seekid ) {
+			//throw 3;
 			WOOD_CLASS* todelete = lastWood;
 			lastWood = (*lastWood).getprevWood();
 			(*lastWood).setnextWood(NULL);
@@ -817,6 +836,7 @@ class GARDEN_CLASS {
 			/**/
 			WOOD_CLASS* temp = firstWood;
 			while ( temp != NULL ) {
+				//if ( temp == lastWood ) throw 3;
 				if ( (*temp).getNumber() == seekid ) {
 					WOOD_CLASS* left = (*temp).getprevWood();
 					WOOD_CLASS* right = (*temp).getnextWood();
@@ -836,10 +856,10 @@ class GARDEN_CLASS {
 				temp = (*temp).getnextWood();
 			}
 			/**/
-		
 		}
+		if (lastWood!= NULL) maxid = (*lastWood).getNumber();
+		else maxid = 0;
 		if ( deleted ) woods--;
-		
 	}
 
 	void growthGarden() {
@@ -867,7 +887,6 @@ class GARDEN_CLASS {
 	}
 
 	void cloneWood(unsigned int seekid) {
-
 		WOOD_CLASS* seekwood = NULL;
 		WOOD_CLASS* temp = firstWood;
 
@@ -954,6 +973,7 @@ class GARDEN_CLASS {
 	}
 
 	void showGarden() {
+		cout << "woods: " << woods << endl << "maxid: " << maxid << endl;
 		WOOD_CLASS* wood = firstWood;
 		while ( wood != NULL ) {
 			cout <<  (*wood).getNumber() << ":" << (*wood).getHeight() <<  "\nDRZEWO-----\n";
@@ -976,3 +996,86 @@ class GARDEN_CLASS {
 
 };
 
+
+
+int main () {
+	
+	GARDEN_CLASS garden = GARDEN_CLASS();
+	garden.plantWood();
+	garden.plantWood();
+	garden.plantWood();
+	garden.plantWood();
+	garden.plantWood();
+	garden.plantWood();
+	garden.plantWood();
+	garden.showGarden();
+	garden.extractWood(0);
+	garden.extractWood(1);
+	garden.extractWood(2);
+	garden.extractWood(3);
+	garden.extractWood(4);
+	garden.extractWood(5);
+	garden.extractWood(6);
+	garden.plantWood();
+	garden.plantWood();
+	garden.plantWood();
+	garden.plantWood();
+	garden.plantWood();
+	garden.plantWood();
+	garden.plantWood();
+	garden.showGarden();
+	garden.extractWood(1);
+	garden.extractWood(3);
+	garden.extractWood(5);
+	garden.showGarden();
+	garden.plantWood();
+	garden.plantWood();
+	garden.plantWood();
+	garden.showGarden();
+	garden.extractWood(0);
+	garden.extractWood(1);
+	garden.extractWood(2);
+	garden.extractWood(3);
+	garden.extractWood(4);
+	garden.extractWood(5);
+	garden.extractWood(6);
+	garden.extractWood(6);
+	cout << 1 << endl;
+	garden.showGarden();
+
+	garden.plantWood();
+	cout << 2 << endl;
+	garden.showGarden();
+
+	garden.extractWood(0);
+	cout << 3 << endl;
+	garden.showGarden();
+
+	garden.plantWood();
+	cout << 4 << endl;
+	garden.showGarden();
+
+	garden.plantWood();
+	cout << 5 << endl;
+	garden.showGarden();
+
+	garden.extractWood(0);
+	cout << 6 << endl;
+	garden.showGarden();
+
+	garden.plantWood();
+	cout << 7 << endl;
+	garden.showGarden();
+
+	garden.extractWood(1);
+	cout << 8 << endl;
+	garden.showGarden();
+	
+	garden.plantWood();
+	cout << 9 << endl;
+	garden.showGarden();
+
+
+return 0;
+	
+}
